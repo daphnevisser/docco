@@ -1,13 +1,19 @@
 import { useState } from "react";
 import "./text-editor.css";
 import MDEditor from "@uiw/react-md-editor";
+import { Cell } from "../../state";
+import { useActions } from "../../hooks/useActions";
 
-const TextEditor: React.FC = () => {
+interface TextEditorProps {
+  cell: Cell;
+}
+
+const TextEditor: React.FC<TextEditorProps> = ({ cell }) => {
   const [editing, setEditing] = useState(false);
-  const [value, setValue] = useState<string | undefined>("# Header");
+  const { updateCell } = useActions();
 
   const onBlur = (event: React.FocusEvent<HTMLDivElement>): void => {
-    if (value) {
+    if (cell.content) {
       setEditing(false);
     }
   };
@@ -15,7 +21,11 @@ const TextEditor: React.FC = () => {
   if (editing) {
     return (
       <div data-color-mode="dark" className="text-editor">
-        <MDEditor value={value} onChange={setValue} onBlur={onBlur} />
+        <MDEditor
+          value={cell.content}
+          onChange={(value) => updateCell(cell.id, value || "")}
+          onBlur={onBlur}
+        />
       </div>
     );
   }
@@ -27,7 +37,7 @@ const TextEditor: React.FC = () => {
       className="text-editor card"
     >
       <div className="card-content">
-        <MDEditor.Markdown source={value} />
+        <MDEditor.Markdown source={cell.content || "Click to edit"} />
       </div>
     </div>
   );
