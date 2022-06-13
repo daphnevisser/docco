@@ -1,5 +1,5 @@
 import "./action-bar.css";
-import { useActions } from "../../hooks/useActions";
+import { useActions } from "../../hooks";
 import ActionButton from "./ActionButton";
 
 interface ActionBarProps {

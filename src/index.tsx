@@ -4,7 +4,7 @@ import ReactDOM from "react-dom";
 import { Provider } from "react-redux";
 import { store } from "./state";
 
-import CellList from "./components/CellList/CellList";
+import CellList from "./components/CellList";
 
 const App = () => {
   return (
