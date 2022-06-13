@@ -18,22 +18,39 @@ const CodeCell: React.FC<CodeCellProps> = ({ cell }) => {
     (state) => state.bundles && state.bundles[cell.id]
   );
 
+  // Bundle the code from all previous code cell so you can use any functions/variables that you have previously defined in the current code cell
+  const cumulativeCode = useTypedSelector((state) => {
+    const { data, order } = state.cells;
+    const orderedCells = order.map((id) => data[id]);
+
+    const cumulativeCode = [];
+    for (let c of orderedCells) {
+      if (c.type === "code") {
+        cumulativeCode.push(c.content);
+      }
+      if (c.id === cell.id) {
+        break;
+      }
+    }
+    return cumulativeCode;
+  });
+
   useEffect(() => {
     // Don't wait 750ms on the first render
     if (!bundle) {
-      createBundle(cell.id, cell.content);
+      createBundle(cell.id, cumulativeCode.join("\n"));
       return;
     }
 
     const timer = setTimeout(async () => {
-      createBundle(cell.id, cell.content);
+      createBundle(cell.id, cumulativeCode.join("\n"));
     }, 750);
 
     return () => {
       clearTimeout(timer);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [cell.content, cell.id, createBundle]);
+  }, [cumulativeCode.join("\n"), cell.id, createBundle]);
 
   return (
     <Resizable direction="vertical">
